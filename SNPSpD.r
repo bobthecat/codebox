@@ -1,3 +1,6 @@
+## Method for computing the effective number of variable (SNPs) based on the 
+# spectral decomposition (SpD) of matrices of pairwise LD between SNPs
+# See Nyholt et al. 2004 (PMID:14997420)
 library(snpMatrix)
 library(NCBI2R)
 library(annotate)
@@ -7,17 +10,14 @@ library(annotate)
 GetSNPInfo("rs12345")$chr
  
 chrURL <- "ftp://ftp.ncbi.nlm.nih.gov/hapmap/genotypes/2010-08_phaseII+III/forward/genotypes_chr8_CEU_r28_nr.b36_fwd.txt.gz"
-chr8 <- read.HapMap.data(chrURL)
+chr <- read.HapMap.data(chrURL)
 
-# Nyholt et al. Meff
-Meff <- function(lambda){
-  return(1 + (length(lambda) - 1)*(1 - (var(lambda)/length(lambda))))
-}
+# Usually you are interested in only a subset of the SNPs here: subSNP (vector)
+chr$snp.data@.Data <- chr$snp.data@.Data[,subSNP]
+ldinfo <- ld.snp(chr$snp.data, depth=dim(chr$snp.data)[2])
+plot(ldinfo, filename='ld_plot.eps')
 
-chr8$snp.data@.Data <- chr8$snp.data@.Data[,subSNP]
-ldinfo <- ld.snp(chr8$snp.data, depth=dim(chr8$snp.data)[2])
-plot(ldinfo, filename='NCALD.eps')
-
+# matrix massage
 ldinfo$rsq2 <- ldinfo$rsq2[,dim(ldinfo$rsq2)[2]:1]
 ldinfo$rsq2 <- cbind(0, ldinfo$rsq2)
 ldinfo$rsq2 <- rbind(ldinfo$rsq2, 0)
@@ -27,12 +27,17 @@ for(i in 1:dim(ldinfo$rsq2)[1]){
   ldinfo$rsq2[i,i]=1
 }
 
-# sanity check
-# head(ldinfo$rsq2[,1:5])
-
+# EIGEN values extraction
 e <- eigen(ldinfo$rsq2, symmetric=TRUE, only.values=TRUE)
 
+# The effective number of variable (Meff)
+Meff <- function(lambda){
+  return(1 + (length(lambda) - 1)*(1 - (var(lambda)/length(lambda))))
+}
+
 Meff(e$values)
+
 ## final notes
 # reduction are not huge so don't be surprise
-# I had 131 SNP and they were reduced to 122.4
+# a few example 131 SNP were reduced to 122.4
+# 16 -> 11.3; 51-> 38.7...
