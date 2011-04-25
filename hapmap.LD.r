@@ -49,7 +49,7 @@ hapmap.LD <- function(gene.name=NULL, chr=NULL,
   # Choose the file describing the chromosome where your SNPs are
   # To know it use:
   # GetSNPInfo("rs12345")$chr
-  chrURL <- paste("ftp://ftp.ncbi.nlm.nih.gov/hapmap/genotypes/2010-08_phaseII+III/forward/genotypes_chr",x$chr,"_CEU_r28_nr.b36_fwd.txt.gz")
+  chrURL <- paste("ftp://ftp.ncbi.nlm.nih.gov/hapmap/genotypes/2010-08_phaseII+III/forward/genotypes_chr",x$chr,"_CEU_r28_nr.b36_fwd.txt.gz", sep='')
   hapmap <- read.HapMap.data(chrURL)
 
   # Usually you are interested in only a subset of the SNPs here: subSNP (vector)
