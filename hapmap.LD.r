@@ -55,5 +55,6 @@ hapmap.LD <- function(gene.name=NULL, chr=NULL,
   # Usually you are interested in only a subset of the SNPs here: subSNP (vector)
   hapmap$snp.data@.Data <- hapmap$snp.data@.Data[,subSNP]
   ldinfo <- ld.snp(hapmap$snp.data, depth=dim(hapmap$snp.data)[2])
-  plot(ldinfo, filename='ld_plot.eps')
+  fName <- paste('ld_plot', gene.name, ".eps", sep='')
+  plot(ldinfo, filename=fName)
 }
