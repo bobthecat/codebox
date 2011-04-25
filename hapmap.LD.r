@@ -6,9 +6,8 @@
 # 
 #
 ##################### USAGE #########################
-# You give either the Entrez gene ID or
-# the chr position and optionally the region on the chr
-# using the start and stop
+# You give either the Entrez gene name (the SYMBOL) or optionally
+# the chr position + the region on the chr using the start and stop
 # > hapmap.LD("ABLIM3")
 # 
 # output the heatmap into a EPS file
@@ -38,7 +37,7 @@ hapmap.LD <- function(gene.name=NULL, chr=NULL,
       x <- list(chr=chr, GeneLowPoint=start, GeneHighPoint=stop)
     }
   }
-  # grab LD info from HapMap
+  # grab LD info from HapMap just to know which SNPs are in the gene
   f <- GetLDInfo(x$chr, x$GeneLowPoint, x$GeneHighPoint)
   subSNP <- unique(f$SNPA)
   # No LDdata available
