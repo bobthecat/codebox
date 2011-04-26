@@ -16,8 +16,7 @@
 
 hapmap.LD <- function(gene.name=NULL, chr=NULL, 
   start=NULL, stop=NULL, method=c("r2", "Dprime"),
-  mysnp=NULL) {
-  require(snpMatrix)
+  subSNP=NULL) {
   require(NCBI2R)
   require(annotate)
   require(org.Hs.eg.db)
@@ -37,24 +36,26 @@ hapmap.LD <- function(gene.name=NULL, chr=NULL,
       x <- list(chr=chr, GeneLowPoint=start, GeneHighPoint=stop)
     }
   }
-  # grab LD info from HapMap just to know which SNPs are in the gene
-  f <- GetLDInfo(x$chr, x$GeneLowPoint, x$GeneHighPoint)
-  subSNP <- unique(f$SNPA)
-  # No LDdata available
-  if(is.null(dim(f))){
-    cat("No LD data available\n")
-    return(f)
+  
+  if(is.null(subSNP)){
+    # grab LD info from HapMap just to know which SNPs are in the gene
+    print("getting the SNPs in your gene")
+    print("The GetLDInfo function fail if the snpMatrix package is already loaded")
+    f <- GetLDInfo(chr=x$chr, pos1=x$GeneLowPoint, pos2=x$GeneHighPoint)
+    subSNP <- unique(f$SNPA)
   }
-
+  
+  library(snpMatrix)
   # Choose the file describing the chromosome where your SNPs are
   # To know it use:
   # GetSNPInfo("rs12345")$chr
+  print('Getting LD info from HapMap')
   chrURL <- paste("ftp://ftp.ncbi.nlm.nih.gov/hapmap/genotypes/2010-08_phaseII+III/forward/genotypes_chr",x$chr,"_CEU_r28_nr.b36_fwd.txt.gz", sep='')
   hapmap <- read.HapMap.data(chrURL)
 
   # Usually you are interested in only a subset of the SNPs here: subSNP (vector)
   hapmap$snp.data@.Data <- hapmap$snp.data@.Data[,subSNP]
   ldinfo <- ld.snp(hapmap$snp.data, depth=dim(hapmap$snp.data)[2])
-  fName <- paste('ld_plot', gene.name, ".eps", sep='')
+  fName <- paste('ld_plot_', gene.name, ".eps", sep='')
   plot(ldinfo, filename=fName)
 }
