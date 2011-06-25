@@ -6,56 +6,85 @@
 # 
 #
 ##################### USAGE #########################
-# You give either the Entrez gene name (the SYMBOL) or optionally
-# the chr position + the region on the chr using the start and stop
-# > hapmap.LD("ABLIM3")
+# Input:
+# geneName: Entrez gene ID [if provided subSNP is ignored]
+# subSNP: [required if geneID is NULL] character vector; the rs SNP ID you want to 
+#   plot otherwise try to plot the entire chromosome 
+#   LD map (will fail)
+# chr: integer; chromosome number
+# hapmap.file: file location of HapMap chromosome file 
+#   downloaded using readHapMap.data from snpMatrix 
+#   package
+# ...: further argument for ld.snp function from snpMatrix
+#
+# USAGE
+# > library(org.Hs.eg.db)
+# > (id <- as.vector(unlist(mget("POU5F1", org.Hs.egSYMBOL2EG))))
+# > hapmap.LD(geneID=id)
 # 
 # output the heatmap into a EPS file
 # 
 #####################################################
 
-hapmap.LD <- function(gene.name=NULL, chr=NULL, 
-  start=NULL, stop=NULL, method=c("r2", "Dprime"),
-  subSNP=NULL) {
-  require(NCBI2R)
+hapmap.LD <- function(geneID=NULL, subSNP=NULL, chr=NULL, hapmap.file=NULL, ...) {
+  require(snpMatrix)
   require(annotate)
   require(org.Hs.eg.db)
+  require(foreach)
+  require(doMC)
+  require(multicore)
+  ncore = multicore:::detectCores()
+  registerDoMC(cores = ncore)
   
-
-  # grab chromosome number + gene position
-  if(!is.null(gene.name)){
-    # this is NCBI gene info not HapMap info.
-    # coordinates can be different. It is better to use your own coordinates
-    geneID <- as.vector(unlist(mget(gene.name, env=revmap(org.Hs.egSYMBOL))))
-    x <- GetGeneInfo(geneID)
+  if(is.null(subSNP) && is.null(geneID)){
+    stop("subSNP and geneID are NULL. Selection of SNP to plot is required.\nAn entire chromosome cannot be plotted")
+  }
+  
+  if(!is.null(geneID)){
+    start <- mget(geneID, env=org.Hs.egCHRLOC)
+    end <- mget(geneID, env=org.Hs.egCHRLOCEND)
+    chr <- mget(geneID, env=org.Hs.egCHR)
+    subSNP <- NULL
+  }
+  
+  print('Getting LD info from HapMap')
+  if(is.null(hapmap.file)){
+    if(is.null(chr)){
+      stop("Chromosome number has to be provided if no HapMap file is given")
+    }
+    hapmap.file <- paste("ftp://ftp.ncbi.nlm.nih.gov/hapmap/genotypes/2010-08_phaseII+III/forward/genotypes_chr",chr,"_CEU_r28_nr.b36_fwd.txt.gz", sep='')
   }
   else{
-    if(is.null(chr) | is.null(start) | is.null(stop)){
-      stop("If no gene name is define then chr, start and stop are needed!")
-    } else{
-      x <- list(chr=chr, GeneLowPoint=start, GeneHighPoint=stop)
+    hapmap.file <- paste("file://", hapmap.file, sep="")
+    hapmap <- read.HapMap.data(hapmap.file)
+  }
+  
+  
+  if(is.null(subSNP)){
+    xx <- hapmap$snp.support[as.numeric(as.vector(hapmap$snp.support$Position))>= start,]
+    xx <- xx[as.numeric(as.vector(xx$Position)) <= end,]
+    subSNP <- rownames(xx)
+    idx.cols <- which(colnames(hapmap$snp.data@.Data) %in% subSNP)
+    hapmap$snp.data@.Data <- hapmap$snp.data@.Data[,idx.cols]
+  }
+  else{
+    idx.cols <- which(colnames(hapmap$snp.data@.Data) %in% subSNP)
+    hapmap$snp.data@.Data <- hapmap$snp.data@.Data[,idx.cols]
+  }
+  
+  # remove grey lines SNP with no info for the selected region
+  idx <- foreach(i = 1:ncol(hapmap$snp.data@.Data), .combine=c) %dopar% {
+    if(length(unique(as.numeric(hapmap$snp.data@.Data[,i]))) <= 2){
+      i
     }
   }
   
-  if(is.null(subSNP)){
-    # grab LD info from HapMap just to know which SNPs are in the gene
-    print("getting the SNPs in your gene")
-    print("The GetLDInfo function fail if the snpMatrix package is already loaded")
-    f <- GetLDInfo(chr=x$chr, pos1=x$GeneLowPoint, pos2=x$GeneHighPoint)
-    subSNP <- unique(f$SNPA)
+  if(length(idx)>0){
+    hapmap$snp.data@.Data <- hapmap$snp.data@.Data[,-idx]
   }
-  
-  library(snpMatrix)
-  # Choose the file describing the chromosome where your SNPs are
-  # To know it use:
-  # GetSNPInfo("rs12345")$chr
-  print('Getting LD info from HapMap')
-  chrURL <- paste("ftp://ftp.ncbi.nlm.nih.gov/hapmap/genotypes/2010-08_phaseII+III/forward/genotypes_chr",x$chr,"_CEU_r28_nr.b36_fwd.txt.gz", sep='')
-  hapmap <- read.HapMap.data(chrURL)
-
-  # Usually you are interested in only a subset of the SNPs here: subSNP (vector)
-  hapmap$snp.data@.Data <- hapmap$snp.data@.Data[,subSNP]
-  ldinfo <- ld.snp(hapmap$snp.data, depth=dim(hapmap$snp.data)[2])
-  fName <- paste('ld_plot_', gene.name, ".eps", sep='')
-  plot(ldinfo, filename=fName)
+  print('a')
+  ldinfo <- ld.snp(hapmap$snp.data, depth=dim(hapmap$snp.data)[2], ...)
+  print('b')
+  fName <- paste('ld_plot',".eps", sep='')
+  plot.snp.dprime(ldinfo, start=a, end=b, filename=fName)
 }
