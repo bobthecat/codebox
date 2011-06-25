@@ -7,16 +7,17 @@
 lmp <- function (modelobject) {
   if (class(modelobject) != "lm") stop("Not an object of class 'lm'")
   f <- summary(modelobject)$fstatistic
-  print(f)
+  # print(f)
   p <- pf(f[1],f[2],f[3],lower.tail=F)
   attributes(p) <- NULL
   return(p)
 }
 
-# lmp.gls(ModFull, data.average$zygosity)
-lmp.gls <- function (modelobject, varianceFactor=NULL) {
+# lmp.gls(ModFull, data.average$zygosity, data=data.average)
+lmp.gls <- function (modelobject, varianceFactor=NULL, data) {
   if (class(modelobject) != "gls") stop("Not an object of class 'gls'")
-  z <- summary(modelobject)
+  # z <- summary(modelobject)
+  idx.na <- !is.na(data[,gsub("as.numeric\\((.*)\\)", "\\1", names(modelobject$coefficients)[2])])
   # fitted values
   f <- modelobject$fitted
   # rank (number of column) of the model matrix
@@ -29,13 +30,16 @@ lmp.gls <- function (modelobject, varianceFactor=NULL) {
   r <- modelobject$residuals
   # weights
   w <- as.vector(coef(modelobject$modelStruct, unconstrained=F))
-  w <- ifelse(varianceFactor == 1, 1, w)
-  # print(w)
+  w <- ifelse(varianceFactor[idx.na] == 1, 1, w)
+  
+  ###
+  # mss = Sum of the squared different from the mean
+  # rss = Residual Sum of Square
   if (is.null(w)) {
     mss <- sum((f - mean(f))^2)
     rss <- sum(r^2)
     print(paste(mss, rss))
-  } 
+  }
   else {
     m <- sum(w * f/sum(w))
     mss <- sum(w * (f - m)^2)
@@ -43,8 +47,11 @@ lmp.gls <- function (modelobject, varianceFactor=NULL) {
   }
   # 
   resvar <- rss/rdf
+  # 
+  
   # F-statistics
-  f <- c(value = (mss/(p))/resvar, numdf = p, dendf = rdf)
+  f <- c(value = {mss/p}/resvar, numdf = p - 1, dendf = rdf)
+  cat("F-statistics\n")
   print(f)
   p <- pf(f[1],f[2],f[3], lower.tail=F)
   attributes(p) <- NULL
