@@ -15,10 +15,12 @@
 # df: data frame with 2 column
 # line.col: vector length 2 with colors for the lines. Default to grey for
 #   value going up and black for value going down
-# label.cex: magnification for x and y labels
-# title.cex: magnificatoin for titles
+# label.cex: magnification for x and y labels from 0 to 1
+# title.cex: magnificatoin for titles from 0 to 1
 # ...: supplementary arguments supplied to par usually margin
-# table.graph(df, mar=c(5, 5, 1, 5))
+# 
+# EXAMPLE:
+# table.graph(cars, label.cex=0.7, mar=c(5, 5, 1, 5))
 # 
 #####################################################
 
