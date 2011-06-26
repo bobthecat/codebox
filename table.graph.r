@@ -2,7 +2,7 @@
 # table.graph.r
 #
 # Created by David Ruau on 2011-06-23.  
-# Department of Pediatrics/Systems Biology,
+# Department of Pediatrics/Systems Medicine,
 # Stanford University.
 # 
 #
