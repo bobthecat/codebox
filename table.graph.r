@@ -2,11 +2,12 @@
 # table.graph.r
 #
 # Created by David Ruau on 2011-06-23.  
-# Copyright (c) 2011 Department of Pediatrics/Cancer Biology Stanford University. All rights reserved.
+# Copyright (c) 2011 Department of Pediatrics/Systems Biology,
+# Stanford University. All rights reserved.
 # 
 #
 ##################### USAGE #########################
-# Tufte table-graphic shown in the Tufte book for paired data
+# Tufte table-graphic shown in the Tufte book for paired numeric data
 # "the visal display of quantitative information" p. 158
 #
 # Column names and row names will be used to label the plot
