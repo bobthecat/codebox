@@ -2,7 +2,8 @@
 # hapmap.LD.r
 #
 # Created by David Ruau on 2011-04-23.  
-# Copyright (c) 2011 Department of Pediatrics/Cancer Biology Stanford University. All rights reserved.
+# Department of Pediatrics/Div. Systems Medicine
+# Stanford University.
 # 
 #
 ##################### USAGE #########################
