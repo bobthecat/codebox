@@ -2,8 +2,8 @@
 # table.graph.r
 #
 # Created by David Ruau on 2011-06-23.  
-# Copyright (c) 2011 Department of Pediatrics/Systems Biology,
-# Stanford University. All rights reserved.
+# Department of Pediatrics/Systems Biology,
+# Stanford University.
 # 
 #
 ##################### USAGE #########################
