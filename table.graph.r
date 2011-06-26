@@ -6,7 +6,7 @@
 # 
 #
 ##################### USAGE #########################
-# Following the example table-graphic shown in the Tufte book
+# Tufte table-graphic shown in the Tufte book for paired data
 # "the visal display of quantitative information" p. 158
 #
 # Column names and row names will be used to label the plot
