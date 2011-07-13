@@ -18,6 +18,7 @@
 #   value going up and black for value going down
 # label.cex: magnification for x and y labels from 0 to 1
 # title.cex: magnificatoin for titles from 0 to 1
+# digits: number of significant digits to report
 # ...: supplementary arguments supplied to par usually margin
 # 
 # EXAMPLE:
@@ -25,7 +26,7 @@
 # 
 #####################################################
 
-table.graph <- function(df, line.col=c("grey", "black"), label.cex=1, title.cex=1, ...) {
+table.graph <- function(df, line.col=c("grey", "black"), label.cex=1, title.cex=1, digits = 3, ...) {
   xmin <- min(df)
   xmax <- max(df)
   X1 <- as.numeric(as.vector(df[,1]))
@@ -37,12 +38,12 @@ table.graph <- function(df, line.col=c("grey", "black"), label.cex=1, title.cex=
   # left
   plot(rep(0, nrow(df)), X1, xlim=c(0,1), ylim=c(xmin, xmax), 
     axes=FALSE, xlab='', ylab='', type='n')
-  mtext(text=paste(rownames(df), X1, sep='  '), side=2, at=X1, las=1, cex=label.cex)
+  mtext(text=paste(rownames(df), signif(X1, digits), sep='  '), side=2, at=X1, las=1, cex=label.cex)
   par(new=TRUE)
   # right
   plot(rep(1, nrow(df)), X2, xlim=c(0,1), ylim=c(xmin, xmax), 
     axes=FALSE, xlab='', ylab='', type='n')
-  mtext(text=paste(X2, rownames(df), sep='  '), side=4, at=X2, las=1, cex=label.cex)
+  mtext(text=paste(signif(X2, digits), rownames(df), sep='  '), side=4, at=X2, las=1, cex=label.cex)
   # class label
   mtext(colnames(df)[1], side=3, at=0, cex=title.cex)
   mtext(colnames(df)[2], side=3, at=1, cex=title.cex)
