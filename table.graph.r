@@ -26,7 +26,7 @@
 # 
 #####################################################
 
-table.graph <- function(df, line.col=c("grey", "black"), label.cex=1, title.cex=1, digits = 3, trim = round, ...) {
+table.graph <- function(df, line.col=c("grey", "black"), label.cex=1, title.cex=1, width = 6, digits = 3, rounding.method = "round", ...) {
   xmin <- min(df)
   xmax <- max(df)
   X1 <- as.numeric(as.vector(df[,1]))
@@ -35,15 +35,19 @@ table.graph <- function(df, line.col=c("grey", "black"), label.cex=1, title.cex=
   old.par <- par(no.readonly = TRUE)
   # par settings usually margins
   par(...)
+  # rounding
+  rounding.character <- switch(match(rounding.method, c("round", "signif")), "f", "g")
+  if(is.null(rounding.character)) stop("rounding method must be either \"round\" or \"signif\"")
+  fmt = paste("%", width, ".", digits, rounding.character, sep = "")
   # left
   plot(rep(0, nrow(df)), X1, xlim=c(0,1), ylim=c(xmin, xmax), 
     axes=FALSE, xlab='', ylab='', type='n')
-  mtext(text=paste(rownames(df), trim(X1, digits), sep='  '), side=2, at=X1, las=1, cex=label.cex)
+  mtext(text=paste(rownames(df), sprintf(fmt, X1), sep='  '), side=2, at=X1, las=1, cex=label.cex)
   par(new=TRUE)
   # right
   plot(rep(1, nrow(df)), X2, xlim=c(0,1), ylim=c(xmin, xmax), 
     axes=FALSE, xlab='', ylab='', type='n')
-  mtext(text=paste(trim(X2, digits), rownames(df), sep='  '), side=4, at=X2, las=1, cex=label.cex)
+  mtext(text=paste(sprintf(fmt, X2), rownames(df), sep='  '), side=4, at=X2, las=1, cex=label.cex)
   # class label
   mtext(colnames(df)[1], side=3, at=0, cex=title.cex)
   mtext(colnames(df)[2], side=3, at=1, cex=title.cex)
