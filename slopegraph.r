@@ -16,12 +16,12 @@
 # EXAMPLE:
 # source('slopegraph.r')
 # pdf('slopegraph.pdf', height=7, width=8)
-# slopegraph(data = WorldPhones, mymain = "YEARS", mar=c(5, 5, 5, 5))
+# slopegraph(data = WorldPhones[,1:3], mymain = "YEARS", mar=c(5, 5, 5, 5))
 # dev.off()
 # 
 #####################################################
 
-slopegraph <- function(data = WorldPhones, label.cex=0.9, axis.cex=0.9, digits = 2, rounding.method = NULL, mymain = "slopegraph", ...) {
+slopegraph <- function(data, label.cex=0.9, axis.cex=0.9, digits = 2, rounding.method = NULL, mymain = "slopegraph", ...) {
   require(plotrix)
   if(!is.null(rounding.method)){
     fmt <- .rd.method(rounding.method, width, digits)
@@ -30,16 +30,15 @@ slopegraph <- function(data = WorldPhones, label.cex=0.9, axis.cex=0.9, digits =
   else{
     data.annot <- as.character(as.vector(data))
   }
-  data.annot <- matrix(data.annot, nrow=nrow(data))
+  data.annot <- matrix(data.annot, nrow=nrow(data), ncol=ncol(data))
   old.par <- par(no.readonly = TRUE)
   par(...)
   matplot(data, type='b', pch=NA, axes=FALSE, xlab='', ylab='', lty='solid', col="grey", ...)
   mtext(text = rownames(data), side = 3, at=1:nrow(data), line = 1, cex=axis.cex)
   mtext(text = colnames(data), side = 2, at=data[1,], line = 1, las=1, cex=axis.cex)
   title(main = mymain, line=3)
-  for(i in 1:ncol(data)){
-    for(j in 1:nrow(data)){
-      # text(i, data[i,j], labels=data.annot[i,j], cex=label.cex)
+  for(i in 1:nrow(data)){
+    for(j in 1:ncol(data)){
       boxed.labels(i, data[i,j], labels=data.annot[i,j], bg='white', border = FALSE, cex=label.cex)
     }
   }
