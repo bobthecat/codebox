@@ -7,6 +7,7 @@
 # 
 #
 ##################### USAGE #########################
+# data: data.frame in the same shape as the slopegraph is wanted
 # label.cex: magnification for numeric line labels from 0 to 1
 # axis.cex: magnificatoin for axis titles from 0 to 1
 # digits: number of significant digits to report
