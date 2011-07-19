@@ -16,15 +16,15 @@
 # EXAMPLE:
 # source('slopegraph.r')
 # pdf('slopegraph.pdf', height=7, width=8)
-# slopegraph(data = t(WorldPhones[,1:3]), mymain = "YEARS", mar=c(2, 8, 5, 8))
+# slopegraph(data = t(WorldPhones[,1:3]), mymain = "YEARS", mar=c(2, 5, 5, 5), label.cex=0.8, axis.cex=0.9)
 # dev.off()
 #
-# Tips: when value overlap first extend the height of you plot
-# second round your value
+# Tips: when values overlap try first to extend the height of you plot and if this does not work
+# round your value using the option rounding.method = 'round' and digits=0
 # 
 #####################################################
 
-slopegraph <- function(data, label.cex=0.9, axis.cex=0.9, digits = 2, rounding.method = NULL, mymain = "slopegraph", ...) {
+slopegraph <- function(data, label.cex=0.8, axis.cex=0.9, digits = 2, rounding.method = NULL, mymain = "slopegraph", ...) {
   require(plotrix)
   if(!is.data.frame(data)){
     data <- as.data.frame(data)
@@ -39,15 +39,15 @@ slopegraph <- function(data, label.cex=0.9, axis.cex=0.9, digits = 2, rounding.m
   old.par <- par(no.readonly = TRUE)
   par(...)
   matplot(t(data), type='b', pch=NA, axes=FALSE, xlab='', ylab='', lty='solid', col="grey", ...)
-  mtext(text = colnames(data), side = 3, at=1:ncol(data), line = 1, cex=axis.cex)
-  mtext(text = rownames(data), side = 2, at=data[,1], line = 0.5, las=1, cex=axis.cex)
-  title(main = mymain, line=3)
   for(i in 1:ncol(data)){
     for(j in 1:nrow(data)){
       boxed.labels(i, data[j,i], labels=data[j,i], bg='white', border = FALSE, cex=label.cex)
     }
   }
+  mtext(text = rownames(data), side = 2, at=data[,1], line = 0.5, las=1, cex=axis.cex)
+  mtext(text = colnames(data), side = 3, at=1:ncol(data), line = 1, cex=axis.cex)
   mtext(text = rownames(data), side = 4, at=data[,ncol(data)], line = 0.5, las=1, cex=axis.cex)
+  title(main = mymain, line=3)
   par(old.par)
 }
 
