@@ -37,14 +37,7 @@ table.graph <- function(df, line.col=c("grey", "black"), label.cex=1, title.cex=
   # par settings usually margins
   par(...)
   # rounding
-  if(is.null(rounding.method)){
-    fmt = "%s"
-  } 
-  else{
-    rounding.character <- switch(match(rounding.method, c("round", "signif")), "f", "g")
-    fmt = paste("%", width, ".", digits, rounding.character, sep = "")
-  }
-  
+  fmt <- .rd.method(rounding.method, width, digits)
   # left
   plot(rep(0, nrow(df)), X1, xlim=c(0,1), ylim=c(xmin, xmax), 
     axes=FALSE, xlab='', ylab='', type='n')
@@ -62,4 +55,15 @@ table.graph <- function(df, line.col=c("grey", "black"), label.cex=1, title.cex=
    col=ifelse({X1 - X2} < 0, line.col[1], line.col[2]))
   # restore original settings
   par(old.par)
+}
+
+.rd.method <- function(rounding.method, width, digits){
+  if(is.null(rounding.method)){
+    fmt = "%s"
+  } 
+  else{
+    rounding.character <- switch(match(rounding.method, c("round", "signif")), "f", "g")
+    fmt = paste("%", width, ".", digits, rounding.character, sep = "")
+  }
+  return(fmt)
 }
