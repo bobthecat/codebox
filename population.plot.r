@@ -22,15 +22,15 @@ population.plot <- function(male.count, female.count, sub.title="count", labels=
   
   barplot(-male.count, axes=F, axisnames=F, space=0, xlim=c(-m.xmax, 0), horiz=T)
   mtext('Male', side=3, at=0, line=1, cex=1.5, adj=1)
-  mtext(sub.title, side=1, line=2, at=-m.xmax/2, adj=1)
+  mtext(sub.title, side=1, line=2, at=-mean(male.count), adj=1)
   grid(nx=NULL, ny=NA, col='white', lty="solid")
   # axis(side=1, at=c(0,-1000, -2000, -3000), labels=c(0,1000, 2000, 3000))
   axis(side=1)
   axis(side=4, at=seq(0.5, 10.5, 1), labels=seq(0, 10, 1) ,las=1, tick=F, adj=0.5)
   par(mar=c(4,2,4,2))
-  barplot(colSums(pain.cnt.f), axes=F, axisnames=F, space=0, xlim=c(0,f.xmax), horiz=T)
+  barplot(female.count, axes=F, axisnames=F, space=0, xlim=c(0,f.xmax), horiz=T)
   mtext('Female', side=3, at=0, line=1, cex=1.5, adj = 0)
-  mtext("Pain score count", side=1, line=2, at=1200, adj=0)
+  mtext("sub.title", side=1, line=2, at=mean(female.count), adj=0)
   grid(nx=NULL, ny=NA, col='white', lty="solid")
   axis(side=1)
   # par reset
