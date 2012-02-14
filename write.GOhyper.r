@@ -15,10 +15,11 @@ write.GOhyper <- function(mfhyper, filename='GO_results.xlsx') {
   require(GOstats)
   require(multtest)
   require(xlsx)
+  
   gogo <- summary(mfhyper)
   gogo$adjPvalue <- mt.rawp2adjp(gogo$Pvalue)$adjp[,"BH"]
   gogo <- gogo[,c(1:2,8,3:7)]
-  write.xlsx(gogo, file=filename, sep=',', row.names = FALSE)
+  write.xlsx(gogo, file=filename)
   print(paste('Results written in', filename))
   return(gogo)
 }
