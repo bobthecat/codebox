@@ -11,10 +11,9 @@
 # 
 #####################################################
 
-
-
 GO_over <- function(universe, glist, annot='HsAgilentDesign026652.db', ontology='BP', cutoff=0.001) {
   require(GOstats)
+  universe <- unique(as.character(universe))
   glist <- unique(as.character(glist))
   
   # conditional hypergeometric test
