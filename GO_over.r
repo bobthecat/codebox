@@ -7,9 +7,7 @@
 #
 ##################### USAGE #########################
 # 
-# mfhyper <- GO_over(entrezUniverse, glist=glist, annot='org.Hs.eg.db')
-# geneMappedCount(mfhyper)
-# htmlReport(mfhyper, file="results.html", label="ceci n'est pas une pipe")
+# GO_over(...)
 # 
 #####################################################
 
