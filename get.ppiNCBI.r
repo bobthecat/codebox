@@ -23,8 +23,10 @@ get.ppiNCBI <- function(g.n) {
       int <- readHTMLTable(p[[1]])
       ppi <- rbind(ppi, data.frame(egID=g.n[i], intSymbol=int$`Other Gene`))
     }
-    # play nice! and avoid being kicked out from NCBI servers
-    Sys.sleep(1)
+    if(length(g.n)>1){
+      # play nice! and avoid being kicked out from NCBI servers
+      Sys.sleep(0.5)
+    }
   }
   if(dim(ppi)[1]>0){
     ppi <- unique(ppi)
