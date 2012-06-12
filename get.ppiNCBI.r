@@ -20,13 +20,15 @@ get.ppiNCBI <- function(g.n) {
     exist <- length(getNodeSet(o, "//table//th[@id='inter-prod']"))>0
     if(exist){
       p <- getNodeSet(o, "//table")
-      int <- readHTMLTable(p[[1]])
+      ## need to know which table is the good one
+      for(j in 1:length(p)){
+        int <- readHTMLTable(p[[j]])
+        if(colnames(int)[2]=="Interactant"){break}
+      }
       ppi <- rbind(ppi, data.frame(egID=g.n[i], intSymbol=int$`Other Gene`))
     }
-    if(length(g.n)>1){
-      # play nice! and avoid being kicked out from NCBI servers
-      Sys.sleep(0.5)
-    }
+    # play nice! and avoid being kicked out from NCBI servers
+    Sys.sleep(1)
   }
   if(dim(ppi)[1]>0){
     ppi <- unique(ppi)
