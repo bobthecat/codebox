@@ -17,8 +17,9 @@ write.GOhyper <- function(mfhyper, filename='GO_results.xlsx') {
   require(xlsx)
   
   gogo <- summary(mfhyper)
-  gogo$adjPvalue <- mt.rawp2adjp(gogo$Pvalue)$adjp[,"BH"]
+  gogo$adjPvalue <- mt.rawp2adjp(gogo$Pvalue, proc="BH")$adjp[,2]
   gogo <- gogo[,c(1:2,8,3:7)]
+	gogo <- gogo[order(gogo$OddsRatio),]
   write.xlsx(gogo, file=filename)
   print(paste('Results written in', filename))
   return(gogo)
